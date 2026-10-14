@@ -1,20 +1,23 @@
 name: Akıncı Bulut Ordusu Yıldırım Hit Motoru
 
 on:
-  repository_dispatch:
-    types: [atesle]
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: 'Hedef Haber Sitesi Adresi (URL)'
+        required: true
+        default: 'https://metaltas.com.tr'
 
 jobs:
   hit-ordu:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Aynı anda 10 paralel hat açar (Karakter sınırına takılmamak için 10'lu hat idealdir)
         hat: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       fail-fast: false
 
     steps:
-    - name: Gizli Operasyon Odasından Kodları Çek
+    - name: Kodları Çek
       uses: actions/checkout@v4
 
     - name: Python Sistemini Kur
@@ -22,14 +25,14 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Siber Bağımlılıkları ve Playwright Çekirdeğini Yükle
+    - name: Bağımlılıkları ve Playwright Yükle
       run: |
         python -m pip install --upgrade pip
         pip install playwright
         playwright install chromium
 
-    - name: Bulut Ordusunu Ateşle (Kayseri İllüzyon Operasyonu)
+    - name: Bulut Ordusunu Ateşle
       env:
-        TARGET_SITE: ${{ github.event.client_payload.site_url }}
+        TARGET_SITE: ${{ github.event.inputs.site_url }}
       run: |
         python runner.py
